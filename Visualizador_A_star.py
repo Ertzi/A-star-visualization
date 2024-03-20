@@ -167,17 +167,17 @@ pygame.display.set_caption("Visualización del algoritmo A estrella")
 # Crear matriz para almacenar el estado de la cuadrícula:
 
 
-def draw_grid(grid,counter,dibujar_nodos_visitados,visitados,sol):
+def draw_grid(grid,counter,dibujar_nodos_visitados,visitados,sol,f):
     screen.fill(GRID_COLOR)  # Rellenar el fondo con el color de la cuadrícula
 
-    if dibujar_nodos_visitados and counter[0] < len(visitados): # Expandimos los nodos visitados
+    if dibujar_nodos_visitados and counter[0] < len(visitados) and f != "No hay camino": # Expandimos los nodos visitados
         x,y = visitados[counter[0]]
         grid[x][y] = 5
         # Dibujamos el punto inicial y final encima de los nodos visitados:
         x0,y0 = sol[0]
         grid[x0][y0] = 3
         counter[0] += 1
-    if dibujar_nodos_visitados and counter[0] == len(visitados) and len(visitados) != 0: # 
+    if dibujar_nodos_visitados and counter[0] == len(visitados) and len(visitados) != 0  and f != "No hay camino": # 
         for x,y in sol[1:-1]:
             grid[x][y] = 2
             # Dibujamos el punto inicial y final encima del camino:
@@ -217,6 +217,7 @@ def main():
     counter = [0]
     visitados = []
     sol = []
+    f = 0
 
      # Crear fuente para el texto
     font = pygame.font.Font(None, 15)
@@ -255,15 +256,17 @@ def main():
                 sol = []
                 sol,f,visitados = A_star(mapa,n)
                 escribir_coste_algoritmo = True
-                if not dibujar_nodos_visitados:
-                    for x,y in sol[1:-1]:
-                        mapa[x][y] = 2
+                if sol == None:
+                    f = "No hay camino"   
+                else:
+                    if not dibujar_nodos_visitados:
+                        for x,y in sol[1:-1]:
+                            mapa[x][y] = 2
 
-                    x0,y0 = sol[0]
-                    mapa[x0][y0] = 3
-                    xn,yn = sol[-1]
-                    mapa[xn][yn] = 4
-                
+                        x0,y0 = sol[0]
+                        mapa[x0][y0] = 3
+                        xn,yn = sol[-1]
+                        mapa[xn][yn] = 4
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 
@@ -286,14 +289,17 @@ def main():
                         sol = []
                         sol,f,visitados = A_star(mapa,n)
                         escribir_coste_algoritmo = True
-                        if not dibujar_nodos_visitados:
-                            for x,y in sol[1:-1]:
-                                mapa[x][y] = 2
+                        if sol == None:
+                            f = "No hay camino"   
+                        else:
+                            if not dibujar_nodos_visitados:
+                                for x,y in sol[1:-1]:
+                                    mapa[x][y] = 2
 
-                            x0,y0 = sol[0]
-                            mapa[x0][y0] = 3
-                            xn,yn = sol[-1]
-                            mapa[xn][yn] = 4
+                                x0,y0 = sol[0]
+                                mapa[x0][y0] = 3
+                                xn,yn = sol[-1]
+                                mapa[xn][yn] = 4
 
                     drawing = True
                     x, y = event.pos
@@ -346,7 +352,7 @@ def main():
                     if 0 <= row < n and 0 <= col < n:
                         mapa[row][col] = 0
 
-        draw_grid(mapa,counter,dibujar_nodos_visitados,visitados,sol)
+        draw_grid(mapa,counter,dibujar_nodos_visitados,visitados,sol,f)
         for i, surface in enumerate(rendered_instructions):
             screen.blit(surface, (width -300, i * 20))
         
@@ -355,8 +361,10 @@ def main():
         else:
             texto = "Off"
         screen.blit(font2.render(f"{texto}",True,TEXT_COLOR),(width - 80, height - 485))
-        if escribir_coste_algoritmo:
+        if escribir_coste_algoritmo and f != "No hay camino":
             screen.blit(font3.render(f"La longitud del camino es: {f}",True,TEXT_COLOR),(width - 295, height - 250))
+        elif escribir_coste_algoritmo and f == "No hay camino":
+            screen.blit(font3.render("No hay camino posible",True,(255,0,0)),(width - 295, height - 250))
         button.draw(screen)
         button_clear_all.draw(screen)
         button_inicio_algoritmo.draw(screen)

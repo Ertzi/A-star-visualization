@@ -1,6 +1,5 @@
 # A-star-visualization
-Visualización del algoritmo A estrella en python. 
-Paquetes necesarios para la ejecución:
+Visualización del algoritmo A estrella en python. Paquetes necesarios para la ejecución:
 - numpy
 - pygame
   
